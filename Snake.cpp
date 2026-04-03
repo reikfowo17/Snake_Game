@@ -101,6 +101,18 @@ void CONRAN::DiChuyen(int Huong) {
   if (Huong == 1) A[0].y = A[0].y + 1; 
   if (Huong == 2) A[0].x = A[0].x - 1; 
   if (Huong == 3) A[0].y = A[0].y - 1; 
+
+  if (A[0].x >= WIDTH) {
+      A[0].x = 1; 
+  } else if (A[0].x <= 0) {
+      A[0].x = WIDTH - 1; 
+  }
+
+  if (A[0].y >= HEIGHT) {
+      A[0].y = 1; 
+  } else if (A[0].y <= 0) {
+      A[0].y = HEIGHT - 1; 
+  }
 }
 
 void gotoxy(int column, int line) {
