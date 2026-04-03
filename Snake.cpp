@@ -9,9 +9,11 @@ using namespace std;
 // PHẦN 1: KHAI BÁO (DECLARATIONS / PROTOTYPES)
 // ==========================================================
 
+const int WIDTH = 70;  // Chiều rộng bản đồ
+const int HEIGHT = 20; // Chiều cao bản đồ
 void gotoxy(int column, int line);
 void Nocursortype();
-
+void VeTuong();
 // Khai báo cấu trúc điểm
 struct Point {
   int x, y;
@@ -35,10 +37,9 @@ public:
 int main() {
   Nocursortype(); 
   system("cls"); 
-  
+  VeTuong();
   CONRAN r;
   int Huong = 0;
-
   r.Ve(); 
 
   while (1) {
@@ -114,4 +115,24 @@ void Nocursortype() {
     Info.bVisible = FALSE;
     Info.dwSize = 20;
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &Info);
+}
+
+void VeTuong() {
+    // Vẽ viền trên và viền dưới
+    for (int i = 0; i <= WIDTH; i++) {
+        gotoxy(i, 0); 
+        cout << "+"; // Thay doi ky tu o day
+        
+        gotoxy(i, HEIGHT); 
+        cout << "+"; // Thay doi ky tu o day
+    }
+
+    // Vẽ viền trái và viền phải
+    for (int i = 0; i <= HEIGHT; i++) {
+        gotoxy(0, i); 
+        cout << "+"; // Thay doi ky tu o day
+        
+        gotoxy(WIDTH, i); 
+        cout << "+"; // Thay doi ky tu o day
+    }
 }
