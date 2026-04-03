@@ -3,10 +3,18 @@
 #include <cstdlib>
 #include <conio.h>
 using namespace std;
+
+// Kich thuoc khung game
+const int GAME_WIDTH  = 50;  // Chieu rong (cot) ben trong
+const int GAME_HEIGHT = 20;  // Chieu cao (hang) ben trong
+
 void gotoxy( int column, int line );
+void VeKhung();
+
 struct Point{
     int x,y;
 };
+
 class CONRAN{
 public:
     struct Point A[100];
@@ -36,6 +44,9 @@ public:
 
 int main()
 {
+    // Bat che do Unicode de hien thi ky tu vien dam
+    SetConsoleOutputCP(CP_UTF8);
+
     CONRAN r;
     int Huong = 0;
     char t;
@@ -49,12 +60,39 @@ int main()
             if (t=='x') Huong = 1;
         }
         system("cls");
+        VeKhung();      // Ve khung truoc, sau do ve ran len tren
         r.Ve();
         r.DiChuyen(Huong);
         Sleep(300);
     }
 
     return 0;
+}
+
+
+// Ham ve khung hinh chu nhat vien dam (double-line box)
+void VeKhung()
+{
+    // -- Goc tren trai
+    gotoxy(0, 0); cout << "\xC9";   // ╔
+    // -- Goc tren phai
+    gotoxy(GAME_WIDTH + 1, 0); cout << "\xBB"; // ╗
+    // -- Goc duoi trai
+    gotoxy(0, GAME_HEIGHT + 1); cout << "\xC8"; // ╚
+    // -- Goc duoi phai
+    gotoxy(GAME_WIDTH + 1, GAME_HEIGHT + 1); cout << "\xBC"; // ╝
+
+    // -- Vien ngang tren va duoi
+    for (int i = 1; i <= GAME_WIDTH; i++) {
+        gotoxy(i, 0);              cout << "\xCD"; // ═
+        gotoxy(i, GAME_HEIGHT + 1); cout << "\xCD"; // ═
+    }
+
+    // -- Vien doc trai va phai
+    for (int i = 1; i <= GAME_HEIGHT; i++) {
+        gotoxy(0, i);              cout << "\xBA"; // ║
+        gotoxy(GAME_WIDTH + 1, i); cout << "\xBA"; // ║
+    }
 }
 
 
