@@ -2,6 +2,7 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
+#include <ctime>
 
 using namespace std;
 
@@ -25,9 +26,9 @@ public:
   int DoDai;
   
   CONRAN();                  
-  void Ve();                 
+  void Ve(Point Qua);                 
   void XoaDuoi();            
-  void DiChuyen(int Huong);  
+  void DiChuyen(int Huong, Point& Qua);  
   void GiuTrongKhung();      
 };
 
@@ -38,9 +39,17 @@ int main() {
   Nocursortype(); 
   system("cls"); 
   VeTuong();
+
+  srand(time(0)); // Mồi xuất hiện vị trí khác nhau
+  Point Qua; // Khai báo biến mồi 
+    
+  // Tạo tọa độ mồi ngẫu nhiên lần đầu tiên 
+  Qua.x = rand() % (WIDTH - 2) + 1; 
+  Qua.y = rand() % (HEIGHT - 2) + 1;
+
   CONRAN r;
   int Huong = 0;
-  r.Ve(); 
+  r.Ve(Qua); 
   int prevW = WIDTH;
   int prevH = HEIGHT;
 
@@ -71,8 +80,8 @@ int main() {
       else if ((key == 's' || key == 'S') && Huong != 3) Huong = 1;
     }
 
-    r.DiChuyen(Huong);
-    r.Ve();
+    r.DiChuyen(Huong, Qua);
+    r.Ve(Qua);
     
     cout << flush;
     Sleep(120); 
@@ -90,11 +99,15 @@ CONRAN::CONRAN() {
   A[2].x = 10; A[2].y = 10;
 }
 
-void CONRAN::Ve() {
+void CONRAN::Ve(Point Qua) {
   for (int i = 0; i < DoDai; i++) {
     gotoxy(A[i].x, A[i].y);
     cout << "X";
   }
+
+  // Vẽ mồi
+  gotoxy(Qua.x, Qua.y);
+  cout << "x";
 }
 
 void CONRAN::XoaDuoi() {
@@ -102,7 +115,9 @@ void CONRAN::XoaDuoi() {
   cout << " "; 
 }
 
-void CONRAN::DiChuyen(int Huong) {
+void CONRAN::DiChuyen(int Huong, Point& Qua) {
+  Point oldTail = A[DoDai - 1];
+
   XoaDuoi(); 
   
   for (int i = DoDai - 1; i > 0; i--)
@@ -124,6 +139,13 @@ void CONRAN::DiChuyen(int Huong) {
   } else if (A[0].y <= 0) {
       A[0].y = HEIGHT - 1; 
   }
+
+  if (A[0].x == Qua.x && A[0].y == Qua.y) { 
+        A[DoDai] = oldTail;
+        DoDai++; 
+        Qua.x = rand() % (WIDTH - 2) + 1; 
+        Qua.y = rand() % (HEIGHT - 2) + 1;
+    }
 }
 
 void CONRAN::GiuTrongKhung() {
