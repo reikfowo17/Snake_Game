@@ -5,16 +5,16 @@
 
 using namespace std;
 
-// ==========================================================
-// PHẦN 1: KHAI BÁO (DECLARATIONS / PROTOTYPES)
-// ==========================================================
+// 1. KHAI BÁO
 
-const int WIDTH = 70;  // Chiều rộng bản đồ
-const int HEIGHT = 20; // Chiều cao bản đồ
+int WIDTH; 
+int HEIGHT;
 void gotoxy(int column, int line);
 void Nocursortype();
 void VeTuong();
-// Khai báo cấu trúc điểm
+void GetTerminalSize();
+void ThayDoiKichThuocManHinh();
+
 struct Point {
   int x, y;
 };
@@ -28,21 +28,34 @@ public:
   void Ve();                 
   void XoaDuoi();            
   void DiChuyen(int Huong);  
+  void GiuTrongKhung();      
 };
 
+// 2. HÀM MAIN
 
-// ==========================================================
-// PHẦN 2: HÀM MAIN (LUỒNG CHẠY CHÍNH)
-// ==========================================================
 int main() {
+  GetTerminalSize();
   Nocursortype(); 
   system("cls"); 
   VeTuong();
   CONRAN r;
   int Huong = 0;
   r.Ve(); 
+  int prevW = WIDTH;
+  int prevH = HEIGHT;
 
   while (1) {
+    GetTerminalSize();
+    if (WIDTH != prevW || HEIGHT != prevH) {
+      prevW = WIDTH;
+      prevH = HEIGHT;
+      ThayDoiKichThuocManHinh();
+      GetTerminalSize();
+      system("cls");
+      VeTuong();
+      r.GiuTrongKhung();
+    }
+
     bool hasKey = false;
     char key = 0;
     
@@ -68,9 +81,7 @@ int main() {
   return 0;
 }
 
-// ==========================================================
-// PHẦN 3: ĐỊNH NGHĨA HÀM (IMPLEMENTATIONS)
-// ==========================================================
+// 3. ĐỊNH NGHĨA HÀM
 
 CONRAN::CONRAN() {
   DoDai = 3;
@@ -115,6 +126,19 @@ void CONRAN::DiChuyen(int Huong) {
   }
 }
 
+void CONRAN::GiuTrongKhung() {
+  for (int i = 0; i < DoDai; i++) {
+    if (A[i].x < 1)
+      A[i].x = 1;
+    else if (A[i].x >= WIDTH)
+      A[i].x = WIDTH - 1;
+    if (A[i].y < 1)
+      A[i].y = 1;
+    else if (A[i].y >= HEIGHT)
+      A[i].y = HEIGHT - 1;
+  }
+}
+
 void gotoxy(int column, int line) {
   COORD coord;
   coord.X = column;
@@ -127,6 +151,33 @@ void Nocursortype() {
     Info.bVisible = FALSE;
     Info.dwSize = 20;
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &Info);
+}
+
+void GetTerminalSize() {
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    WIDTH = csbi.srWindow.Right - csbi.srWindow.Left;
+    HEIGHT = csbi.srWindow.Bottom - csbi.srWindow.Top;
+}
+
+void ThayDoiKichThuocManHinh() {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
+
+    SMALL_RECT window = csbi.srWindow;
+    COORD newSize;
+    newSize.X = window.Right - window.Left + 1;
+    newSize.Y = window.Bottom - window.Top + 1;
+
+    // Chi thay doi buffer neu can
+    if (csbi.dwSize.X < newSize.X || csbi.dwSize.Y < newSize.Y) {
+        SetConsoleScreenBufferSize(hConsole, newSize);
+    }
+
+    // Dat lai kich thuoc cua so (truong hop full screen / maximize)
+    SMALL_RECT newWindow = {0, 0, (SHORT)(newSize.X - 1), (SHORT)(newSize.Y - 1)};
+    SetConsoleWindowInfo(hConsole, TRUE, &newWindow);
 }
 
 void VeTuong() {
